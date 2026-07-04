@@ -18,13 +18,6 @@ CREATE TABLE product
     PRIMARY KEY(ID)
 );
 
-SET GLOBAL local_infile = 1;
-
-LOAD DATA LOCAL INFILE 'C:/Users/billy/Desktop/DataSets/foodandbeveragesdataset/DSA Food and Beverage Dataset 2022-2023.xlsx - Product.csv'
-INTO TABLE  product	
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-IGNORE 1 LINES;
 
 CREATE TABLE salesdata 
 (
@@ -41,14 +34,6 @@ CREATE TABLE salesdata
     UnitPrice DECIMAL(8,2) NOT NULL,
     PRIMARY KEY(id)
 );
-
-
-LOAD DATA LOCAL INFILE 'C:/Users/billy/Desktop/DataSets/foodandbeveragesdataset/DSA Food and Beverage Dataset 2022-2023.csv'
-INTO TABLE  salesdata	
-FIELDS TERMINATED BY ','
-LINES TERMINATED BY '\n'
-IGNORE 1 LINES;
-
 
 -- 1 What is the total revenue across all sales?
 -- 2 What is the total quantity sold by product?
@@ -94,11 +79,13 @@ IGNORE 1 LINES;
 
 
 -- 1 What is the total revenue across all sales?
+
 SELECT
 	SUM(quantity * UnitPrice) AS total_sales
 FROM salesdata;
 
 -- 2 What is the total quantity sold by product?
+
 SELECT 
 	p.id,
     p.productName,
@@ -112,6 +99,7 @@ GROUP BY
 ORDER BY total_quantity DESC;
 
 -- 3 What are the top 5 best-selling products by revenue?
+
 SELECT 
 	p.id,
     p.productName,
@@ -126,6 +114,7 @@ ORDER BY total_revenue DESC
 LIMIT 5;
 
 -- 4 Which product category contributes the most to revenue?
+
 SELECT 
     p.productCategory,
     SUM(Quantity * unitPrice) AS total_revenue
@@ -136,6 +125,7 @@ GROUP BY
 	p.productCategory;
 
 -- 5 What is the monthly sales trend over 2022–2023?
+
 SELECT
 	YEAR(OrderDate) AS year,
     MONTH(orderdate) AS monthNum,
@@ -151,6 +141,7 @@ ORDER BY
     MONTH(orderdate);
 
 -- 6 Which salesperson generated the highest revenue?
+
 SELECT
 	Salesperson,
     SUM(quantity * unitPrice) AS total_revenue
@@ -159,6 +150,7 @@ GROUP BY salesperson
 ORDER BY total_revenue DESC;
 
 -- 7 What is the average order value per salesperson?
+
 SELECT
 	Salesperson,
     AVG(quantity) AS avg_quantity
@@ -167,6 +159,7 @@ GROUP BY salesperson
 ORDER BY avg_quantity DESC;
 
 -- 8 Which supervisor’s team generated the most revenue?
+
 SELECT 
 	supervisor,
     SUM(quantity * UnitPrice) AS total_revenue
@@ -175,6 +168,7 @@ GROUP BY supervisor
 ORDER BY total_revenue DESC;
 
 -- 9 Who are the top 3 managers by total sales under them?
+
 SELECT 
     Manager,
     SUM(Quantity * UnitPrice) AS total_sales
@@ -184,6 +178,7 @@ ORDER BY total_sales DESC
 LIMIT 3;
 
 -- 10 What is the average unit price by product group?
+
 SELECT 
 	sd.productkey,
     productname,
@@ -196,6 +191,7 @@ GROUP BY
     productname;
     
 -- 11 Which products are low-performing (low sales + low revenue)?
+
 SELECT 
 	sd.productkey,
     productname,
@@ -210,6 +206,7 @@ ORDER BY total_sales ASC
 LIMIT 1;
 
 -- 12 What is the revenue split by sales channel (Channel)?
+
 SELECT
 	channel,
     SUM(unitprice * quantity) AS total_sales
@@ -219,6 +216,7 @@ GROUP BY channel;
 -- 13 Which product categories are most popular in each sales channel?
 
 -- 14 What is the peak sales month in each year?
+
 SELECT
 	YEAR(orderdate) AS yearDate,
 	MONTH(orderdate) AS monthnum,
@@ -231,6 +229,7 @@ GROUP BY
     MONTHNAME(orderdate);
 
 -- 15 Compare weekday vs weekend sales — where is revenue higher?
+
 SELECT 
     CASE 
         WHEN DAYOFWEEK(orderdate) IN (1,7) THEN 'Weekend' 
@@ -242,6 +241,7 @@ GROUP BY day_type
 ORDER BY total_revenue DESC;
 
 -- 16 What is the year-over-year growth in revenue between 2022 and 2023?
+
 WITH yearly_revenue AS (
     SELECT 
         YEAR(orderdate) AS year,
@@ -264,6 +264,7 @@ FROM yearly_revenue;
 
 
 -- 17 Find the top-selling product in each product category.
+
 WITH product_sales AS (
     SELECT 
         p.ProductCategory,
@@ -297,6 +298,7 @@ ORDER BY total_revenue DESC;
 
 
 -- 18 Which product has the highest average transaction value
+
 SELECT 
     p.ProductName,
     p.ProductCategory,
@@ -309,6 +311,7 @@ ORDER BY avg_transaction_value DESC
 LIMIT 1;
 
 -- 19 Rank store channels by revenue contribution.
+
 SELECT 
     Channel,
     SUM(Quantity * UnitPrice) AS total_revenue,
@@ -320,6 +323,7 @@ GROUP BY Channel
 ORDER BY total_revenue DESC;
 
 -- 21 What is the highest single transaction value (Quantity × UnitPrice)?
+
 SELECT
 	id,
     orderdate,
@@ -334,6 +338,7 @@ ORDER BY total_sale DESC
 LIMIT 1;
 
 -- 22 Which product had the largest price variation (max - min UnitPrice)?
+
 SELECT 
     p.ProductName,
     p.ProductCategory,
@@ -348,6 +353,7 @@ ORDER BY price_variation DESC
 LIMIT 1;
    
 -- 23 What percentage of total revenue comes from the top 10% of products?
+
 WITH product_revenue AS (
     SELECT 
         p.ID,
@@ -372,6 +378,7 @@ SELECT
 FROM top_products;
 
 -- 24 Find the cumulative revenue growth month-over-month.
+
 WITH monthly_revenue AS (
     SELECT 
         DATE_FORMAT(OrderDate, '%Y-%m') AS month,
@@ -398,6 +405,7 @@ SELECT
 FROM revenue_withGrowth;
 
 -- 25 Show the top 5 days with the highest sales revenue.
+
 SELECT 
     OrderDate,
     SUM(Quantity * UnitPrice) AS total_revenue
@@ -407,6 +415,7 @@ ORDER BY total_revenue DESC
 LIMIT 5;
 
 -- 26 Which product category has the highest average unit price?
+
 SELECT 
     p.ProductCategory,
     ROUND(AVG(sd.UnitPrice), 2) AS avg_unitPrice
@@ -418,6 +427,7 @@ ORDER BY avg_unitPrice DESC
 LIMIT 1;
 
 -- 27 What is the best-selling product in each product group?
+
 WITH product_sales AS (
     SELECT 
         p.ProductGroup,
@@ -448,6 +458,7 @@ WHERE ranked = 1
 ORDER BY total_revenue DESC;
 
 -- 28 Find the product that is consistently sold every month (never missed a month).
+
 WITH total_months AS (
     SELECT COUNT(DISTINCT DATE_FORMAT(OrderDate, '%Y-%m')) AS month_count
     FROM salesdata),
@@ -466,6 +477,7 @@ JOIN total_months tm
     ON pm.months_sold = tm.month_count;
 
 -- 29 Which products were sold in 2022 but not in 2023?
+
 WITH products_2022 AS (
     SELECT 
 		DISTINCT p.ID,
@@ -491,6 +503,7 @@ LEFT JOIN products_2023 p23
 WHERE p23.ID IS NULL;
 
 -- 30 Identify products that have declining sales trend year-over-year.
+
 WITH yearly_revenue AS (
     SELECT 
         p.ID,
@@ -518,6 +531,7 @@ WHERE revenue_2023 < revenue_2022
 ORDER BY yoy_growthPercentage ASC;
 
 -- 31 Which salesperson has the highest average order size?
+
 WITH order_totals AS (
     SELECT 
         sd.Salesperson,
@@ -536,6 +550,7 @@ ORDER BY avg_orderSize DESC
 LIMIT 1;
 
 -- 32 Rank supervisors by the performance of their teams (total sales).
+
 SELECT 
     Supervisor,
     SUM(Quantity * UnitPrice) AS total_sales,
@@ -545,6 +560,7 @@ GROUP BY Supervisor
 ORDER BY total_sales DESC;
 
 -- 33 Which manager oversees the highest revenue-generating products?
+
 WITH product_revenue AS (
     SELECT 
         p.ID,
@@ -574,6 +590,7 @@ WHERE product_rank = 1;
 
 
 -- 34 Find salespeople who sold more than the average revenue of all salespeople.
+
 WITH salesperson_revenue AS (
     SELECT 
         Salesperson,
@@ -592,6 +609,7 @@ WHERE sr.total_revenue > ar.avg_salesPersonRevenue
 ORDER BY sr.total_revenue DESC;
 
 -- 35 Calculate the contribution percentage of each salesperson to their supervisor’s total sales.
+
 WITH salesperson_sales AS (
     SELECT 
         Supervisor,
@@ -621,6 +639,7 @@ ORDER BY
     contribution_percentage DESC;
 
 -- 36 Which quarter of the year generates the most revenue?
+
 SELECT 
     YEAR(OrderDate) AS sales_year,
     QUARTER(OrderDate) AS sales_quarter,
@@ -631,6 +650,7 @@ ORDER BY total_revenue DESC
 LIMIT 1;
 
 -- 37 Find the busiest day of the week for sales (e.g., Monday, Tuesday).
+
 SELECT 
     DAYNAME(OrderDate) AS day_of_week,
     SUM(Quantity * UnitPrice) AS total_revenue
@@ -640,6 +660,7 @@ ORDER BY total_revenue DESC
 LIMIT 1;
 
 -- 38 What percentage of sales comes from December (holiday season)?
+
 WITH total_revenue AS (
     SELECT SUM(Quantity * UnitPrice) AS total_sales
     FROM salesdata),
@@ -655,6 +676,7 @@ FROM december_revenue dr
 CROSS JOIN total_revenue tr;
 
 -- 39 Compare first half (Jan–Jun) vs second half (Jul–Dec) of the year.
+
 SELECT 
     YEAR(OrderDate) AS sales_year,
     CASE 
@@ -671,6 +693,7 @@ ORDER BY
     half_ofYear;
 
 -- 40  Find the growth rate of sales for each month compared to the previous month.
+
 WITH monthly_revenue AS (
     SELECT 
         DATE_FORMAT(OrderDate, '%Y-%m') AS month,
@@ -689,6 +712,7 @@ FROM monthly_revenue;
 
 
 -- 41 Create a ranking of products by revenue contribution (RANK window function).
+
 SELECT 
     p.ProductName,
     p.ProductCategory,
